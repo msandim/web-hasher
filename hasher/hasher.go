@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+// Hasher is responsible to know how to hash the contents of
+type Hasher interface {
+	Hash(url string) (string, error)
+}
+
 // Hash makes a http GET to url defined in the parameter and returns the MD5
 // hashed value of the response, or an error if that was not possible.
 func Hash(url string) (string, error) {
