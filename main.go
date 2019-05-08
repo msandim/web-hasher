@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/msandim/web-hasher/hasher"
 	"github.com/msandim/web-hasher/workerpool"
 )
 
@@ -26,24 +27,25 @@ func parseArgs() (nWorkers int, urls []string, err error) {
 	return
 }
 
-type hashJob struct {
-	url string
-	hasher
-}
-
-func (job *hashJob) Process() workerpool.JobResult {
-	hasher
-}
-
-func hashUrls(urls []string, nWorkers int) {
-
-	var results []string
+func hashUrls(urls []string, nWorkers int) (hashes []string) {
 
 	pool := workerpool.New(nWorkers)
 
 	for _, url := range urls {
-		pool.AddJob()
+		pool.AddJob(hashJob{url: url, hasher: hasher.HTTPHasher{}})
 	}
+
+	pool.EndJobs()
+	pool.Run()
+
+	results := pool.GetResultsChannel()
+
+	for result := range results {
+		hash := result.(hashJobResult).hash
+		hashes = append(hashes, hash)
+	}
+
+	return
 }
 
 func main() {
@@ -54,5 +56,9 @@ func main() {
 		os.Exit(-1)
 	}
 
-	hashUrls(urls, nWorkers)
+	hashes := hashUrls(urls, nWorkers)
+
+	for _, hash := range hashes {
+		fmt.Println(hash)
+	}
 }

@@ -63,11 +63,12 @@ func (pool *WorkerPool) AddJob(job Job) {
 
 // EndJobs tells the Worker Pool that there are no more jobs incoming
 // This internally closes the channel for incoming jobs.
-// This function call may block if there are jobs waiting to be added to the pendingJobs channel
-// (as a result of AddJob()).
 func (pool *WorkerPool) EndJobs() {
-	pool.pendingAddJobs.Wait()
-	close(pool.pendingJobs)
+	// This needs to be done only after all the jobs have been added to the pendingJobs channel:
+	go func() {
+		pool.pendingAddJobs.Wait()
+		close(pool.pendingJobs)
+	}()
 }
 
 // workerRoutine corresponds to the routine in which a worker runs until it is done.
