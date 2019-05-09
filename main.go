@@ -27,22 +27,28 @@ func parseArgs() (nWorkers int, urls []string, err error) {
 	return
 }
 
-func hashUrls(urls []string, nWorkers int) (hashes []string) {
+type hashResult struct {
+	url  string
+	hash string
+}
+
+func hashUrls(urls []string, nWorkers int, hasher hasher.Hasher) (result []hashResult) {
 
 	pool := workerpool.New(nWorkers)
 
 	for _, url := range urls {
-		pool.AddJob(hashJob{url: url, hasher: hasher.HTTPHasher{}})
+		pool.AddJob(hashJob{url: url, hasher: hasher})
 	}
 
 	pool.EndJobs()
 	pool.Run()
 
-	results := pool.GetResultsChannel()
+	poolResults := pool.GetResultsChannel()
 
-	for result := range results {
-		hash := result.(hashJobResult).hash
-		hashes = append(hashes, hash)
+	for poolResult := range poolResults {
+		url := poolResult.GetJob().(hashJob).url
+		hash := poolResult.(hashJobResult).hash
+		result = append(result, hashResult{url: url, hash: hash})
 	}
 
 	return
@@ -56,9 +62,9 @@ func main() {
 		os.Exit(-1)
 	}
 
-	hashes := hashUrls(urls, nWorkers)
+	results := hashUrls(urls, nWorkers, hasher.HTTPHasher{})
 
-	for _, hash := range hashes {
-		fmt.Println(hash)
+	for _, result := range results {
+		fmt.Println(result.url, result.hash)
 	}
 }
