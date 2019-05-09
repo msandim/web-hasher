@@ -1,4 +1,7 @@
 package hasher
 
-//func Test(t *testing.T) {
-//}
+import "testing"
+
+func TestHasher(t *testing.T) {
+
+}

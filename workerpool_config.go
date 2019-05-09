@@ -9,10 +9,11 @@ import (
 type hashJob struct {
 	url    string
 	hasher hasher.Hasher
+	client hasher.HTTPClient
 }
 
 func (job hashJob) Process() workerpool.JobResult {
-	hash, _ := job.hasher.Hash(job.url)
+	hash, _ := job.hasher.Hash(job.url, job.client)
 	return hashJobResult{job: job, hash: hash}
 }
 
