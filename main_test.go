@@ -26,17 +26,17 @@ func TestHashUrls(t *testing.T) {
 	}
 
 	wantedResults := []hashResult{
-		hashResult{
+		{
 			url:  "aa.pt",
 			hash: "31a43f7cf3cdb223ea15f9f7d9da9e89",
 			err:  nil,
 		},
-		hashResult{
+		{
 			url:  "bb.pt",
 			hash: "92ccb58fccd74b971492f0c41d6cee0e",
 			err:  nil,
 		},
-		hashResult{
+		{
 			url:  "cc.pt",
 			hash: "51794ef89c0ce333b16a787765862dd0",
 			err:  nil,
