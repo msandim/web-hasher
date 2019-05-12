@@ -73,7 +73,7 @@ func NewMockHasher(hashMap map[string]string) *MockHasher {
 	return &MockHasher{hashMap: hashMap}
 }
 
-// Hash returns the corresponding hash to the url parameter, or an url if that is not possible.
+// Hash returns the corresponding hash to the url parameter, or an error if that is not possible.
 func (hasher *MockHasher) Hash(url string) (string, error) {
 
 	hash, ok := hasher.hashMap[url]
