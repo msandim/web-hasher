@@ -18,7 +18,7 @@ func (client *HTTPClient) Get(url string) (resp *http.Response, err error) {
 	return http.Get(url)
 }
 
-// mockClient represents an implementation of a Client taht does not perform real HTTP requests.
+// mockClient represents an implementation of a Client that does not perform real HTTP requests.
 type mockClient struct {
 	fakeServer *httptest.Server
 }
