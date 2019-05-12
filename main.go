@@ -1,3 +1,5 @@
+// This entry point is responsible for parsing the arguments/flags,
+// executing the program using the remaining packages and printing them.
 package main
 
 import (
