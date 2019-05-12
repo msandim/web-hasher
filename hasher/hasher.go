@@ -10,32 +10,38 @@ import (
 
 // Hasher is an interface that represents the capability of hashing the contents present in a URL.
 type Hasher interface {
-	// Hash trieves the md5 hash (as a string) of the contents of the url.
-	Hash(url string, client HTTPClient) (string, error)
+	// Hash retrieves the md5 hash (as a string) of the contents of the url.
+	Hash(url string) (string, error)
 }
 
 // HTTPHasher is an implementation of the interface Hasher, by doing an HTTP GET to the URL supplied
 // and hashing the results with MD5.
-type HTTPHasher struct{}
+type HTTPHasher struct {
+	client Client
+}
+
+// NewHTTPHasher returns a new http-based hasher, using the client supplied.
+func NewHTTPHasher(client Client) *HTTPHasher {
+	return &HTTPHasher{client: client}
+}
 
 // Hash makes a http GET to url defined in the parameter and returns the MD5 hashed value of the response,
 // or an error if that was not possible.
-func (hasher HTTPHasher) Hash(url string, client HTTPClient) (string, error) {
+func (hasher *HTTPHasher) Hash(url string) (string, error) {
 
 	urlParsed, err := neturl.Parse(url)
 
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 
 	if urlParsed.Scheme == "" {
 		urlParsed.Scheme = "http"
 	}
 
-	resp, err := client.Get(urlParsed.String())
+	resp, err := hasher.getClient().Get(urlParsed.String())
 
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 
@@ -48,5 +54,32 @@ func (hasher HTTPHasher) Hash(url string, client HTTPClient) (string, error) {
 
 	hashArr := md5.Sum(body)
 	hash := hex.EncodeToString(hashArr[:])
+	return hash, nil
+}
+
+func (hasher *HTTPHasher) getClient() Client {
+	return hasher.client
+}
+
+// MockHasher is an implementation of the interface Hasher, that has an internal map
+// of urls to hashes.
+type MockHasher struct {
+	hashMap map[string]string
+}
+
+// NewMockHasher returns a MockHasher with a certain map of urls to hashes.
+func NewMockHasher(hashMap map[string]string) *MockHasher {
+	return &MockHasher{hashMap: hashMap}
+}
+
+// Hash returns the corresponding hash to the url parameter, or an url if that is not possible.
+func (hasher *MockHasher) Hash(url string) (string, error) {
+
+	hash, ok := hasher.hashMap[url]
+
+	if !ok {
+		return "", fmt.Errorf("URl is not present in the hashMap")
+	}
+
 	return hash, nil
 }

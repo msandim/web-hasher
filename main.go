@@ -30,6 +30,7 @@ func parseArgs() (nWorkers int, urls []string, err error) {
 type hashResult struct {
 	url  string
 	hash string
+	err  error
 }
 
 func hashUrls(urls []string, nWorkers int, hasher hasher.Hasher) (result []hashResult) {
@@ -48,7 +49,8 @@ func hashUrls(urls []string, nWorkers int, hasher hasher.Hasher) (result []hashR
 	for poolResult := range poolResults {
 		url := poolResult.GetJob().(hashJob).url
 		hash := poolResult.(hashJobResult).hash
-		result = append(result, hashResult{url: url, hash: hash})
+		err := poolResult.(hashJobResult).err
+		result = append(result, hashResult{url: url, hash: hash, err: err})
 	}
 
 	return
@@ -62,7 +64,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	results := hashUrls(urls, nWorkers, hasher.HTTPHasher{})
+	results := hashUrls(urls, nWorkers, hasher.NewHTTPHasher(&hasher.HTTPClient{}))
 
 	for _, result := range results {
 		fmt.Println(result.url, result.hash)

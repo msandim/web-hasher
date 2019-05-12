@@ -9,18 +9,18 @@ import (
 type hashJob struct {
 	url    string
 	hasher hasher.Hasher
-	client hasher.HTTPClient
 }
 
 func (job hashJob) Process() workerpool.JobResult {
-	hash, _ := job.hasher.Hash(job.url, job.client)
-	return hashJobResult{job: job, hash: hash}
+	hash, err := job.hasher.Hash(job.url)
+	return hashJobResult{job: job, hash: hash, err: err}
 }
 
 // Implementation of a workerpool job result for the hashing case.
 type hashJobResult struct {
 	job  hashJob
 	hash string
+	err  error
 }
 
 func (result hashJobResult) GetJob() workerpool.Job {
