@@ -26,7 +26,7 @@ func NewHTTPHasher(client Client) *HTTPHasher {
 	return &HTTPHasher{client: client}
 }
 
-// Hash makes a http GET to url defined in the parameter and returns the MD5 hashed value of the response,
+// Hash makes a http GET to the url defined in the parameter and returns the MD5 hashed value of the response,
 // or an error if that was not possible.
 func (hasher *HTTPHasher) Hash(url string) (string, error) {
 
