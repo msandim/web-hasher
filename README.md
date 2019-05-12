@@ -10,11 +10,16 @@ It also uses a pool of goroutines to perform the hashing process of the contents
 
 Example usage:
 ```
-TODO
+go get -u github.com/msandim/web-hasher
+$GOPATH/bin/web-hasher sapo.pt
 ```
 
 You can use an optional flag `parallel` to specify how many goroutines should be created and maintained in the pool of goroutines.
 If not specified, the default stays at 10.
+
+```
+$GOPATH/bin/web-hasher -parallel=3 sapo.pt google.com facebook.com publico.pt
+```
 
 ## Run tests
 ```
