@@ -1,3 +1,4 @@
+// Package workerpool implements a simple goroutine pool.
 package workerpool
 
 import (

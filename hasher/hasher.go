@@ -1,3 +1,4 @@
+// Package hasher includes functions and structures to ease the process of hashing the contents present in an URL.
 package hasher
 
 import (
